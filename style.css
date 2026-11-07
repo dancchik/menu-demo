@@ -1,0 +1,114 @@
+:root {
+  --bg: #fbfbf8;
+  --ink: #1f2420;
+  --muted: #69716b;
+  --red: #a81e2a;
+  --green: #2f5a45;
+  --line: #e2e5dd;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Alegreya Sans", "Segoe UI", sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+a { color: inherit; }
+
+h1, h2, h3 { font-family: "Alegreya", Georgia, serif; margin: 0; }
+
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 18px; }
+
+/* Cross-stitch band, like the embroidery on a traditional shirt */
+.stripe {
+  height: 24px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='16' shape-rendering='crispEdges'%3E%3Cg fill='%23a81e2a'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='2' y='2' width='2' height='2'/%3E%3Crect x='4' y='4' width='2' height='2'/%3E%3Crect x='6' y='6' width='2' height='2'/%3E%3Crect x='8' y='4' width='2' height='2'/%3E%3Crect x='10' y='2' width='2' height='2'/%3E%3Crect x='0' y='14' width='2' height='2'/%3E%3Crect x='2' y='12' width='2' height='2'/%3E%3Crect x='4' y='10' width='2' height='2'/%3E%3Crect x='6' y='8' width='2' height='2'/%3E%3Crect x='8' y='10' width='2' height='2'/%3E%3Crect x='10' y='12' width='2' height='2'/%3E%3C/g%3E%3Cg fill='%231f2420'%3E%3Crect x='0' y='6' width='2' height='4'/%3E%3C/g%3E%3C/svg%3E") repeat-x center / 18px 24px;
+  image-rendering: pixelated;
+}
+
+.top { background: #fff; }
+.top-in {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 28px;
+  padding-bottom: 18px;
+}
+
+.top h1 { font-size: 40px; line-height: 1.05; letter-spacing: -.5px; }
+.tagline { margin: 6px 0 0; color: var(--muted); font-style: italic; }
+
+.langs { display: flex; gap: 2px; flex-shrink: 0; margin-top: 4px; }
+.langs button {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.langs button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+.tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 10px 18px;
+  background: rgba(251, 251, 248, .95);
+  border-bottom: 1px solid var(--line);
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--muted);
+}
+.tabs a.active { background: var(--green); color: #fff; }
+
+.cat { padding: 30px 0 8px; scroll-margin-top: 56px; }
+.cat h2 { font-size: 28px; color: var(--green); margin-bottom: 10px; }
+
+.dish { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.dish:last-child { border-bottom: 0; }
+
+.dish-row { display: flex; align-items: baseline; gap: 8px; }
+.dish h3 { font-size: 20px; font-weight: 700; }
+.leader { flex: 1; min-width: 16px; border-bottom: 2px dotted #c7ccc3; transform: translateY(-5px); }
+.price { font-family: "Alegreya", Georgia, serif; font-size: 19px; font-weight: 700; white-space: nowrap; }
+
+.desc { margin: 4px 0 0; color: var(--muted); max-width: 46ch; }
+
+.meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 6px 0 0; font-size: 14px; color: var(--muted); }
+.tag { font-style: italic; }
+.tag-veg { color: var(--green); }
+.tag-spicy { color: var(--red); }
+
+.foot { margin-top: 32px; background: #fff; padding-bottom: 32px; }
+.foot .wrap { padding-top: 18px; }
+.foot p { margin: 4px 0; }
+.foot a { text-decoration: none; font-weight: 500; }
+.note { margin-top: 14px !important; font-size: 14px; color: var(--muted); }
+
+a:focus-visible, button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
