@@ -4,6 +4,8 @@
 
 Живая версия: https://dancchik.github.io/menu-demo/
 
+Карточка с QR-кодом для стола (формат A6, печатается из браузера): https://dancchik.github.io/menu-demo/qr.html. Сам код лежит в `qr.svg`, для нового клиента его можно сделать заново, например так: `python -c "import segno; segno.make('URL', error='m').save('qr.svg', scale=10, border=2)"`.
+
 Обычный HTML, CSS и JS, без сборки и библиотек. Все блюда, цены и контакты лежат в `menu.js`, поэтому под новое заведение меняются только данные и цвета в `style.css`.
 
 Локально: `python -m http.server` в этой папке и открыть http://localhost:8000. Язык можно задать ссылкой, например `?lang=ru`.
