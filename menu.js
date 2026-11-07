@@ -7,6 +7,9 @@ const MENU = {
     en: "Homestyle Moldovan cooking",
   },
   currency: { ro: "lei", ru: "лей", en: "MDL" },
+  // Google Sheet id with the dishes; the owner edits prices there.
+  // The categories below are only a fallback if the sheet can't be loaded.
+  sheet: "1SbscpXH3KgjiXTJIJJr2XBP2vMrRKTc2VpLsijYk3-E",
   address: "str. Exemplu 12, Chișinău",
   phone: "+373 22 00 00 00",
   hours: {

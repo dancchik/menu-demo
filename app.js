@@ -19,17 +19,74 @@ function pickLang() {
   return LANGS.includes(browser) ? browser : "ro";
 }
 
+// Sheet text is typed by the owner, so it goes into the page escaped.
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function parseCSV(text) {
+  const rows = [[]];
+  let cell = "", quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (c === '"') quoted = false;
+      else cell += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") { rows.at(-1).push(cell); cell = ""; }
+    else if (c === "\n") { rows.at(-1).push(cell); cell = ""; rows.push([]); }
+    else if (c !== "\r") cell += c;
+  }
+  rows.at(-1).push(cell);
+  return rows.filter((r) => r.some((c) => c.trim()));
+}
+
+// One row per dish; a new section starts whenever section_ro changes.
+function fromSheet(rows) {
+  const head = rows[0].map((h) => h.trim());
+  const cats = [];
+  for (const r of rows.slice(1)) {
+    const v = Object.fromEntries(head.map((h, i) => [h, (r[i] || "").trim()]));
+    if (!v.dish_ro || !v.price) continue;
+    let cat = cats.at(-1);
+    if (!cat || cat.title.ro !== v.section_ro) {
+      cat = { id: "s" + cats.length, title: { ro: v.section_ro, ru: v.section_ru, en: v.section_en }, items: [] };
+      cats.push(cat);
+    }
+    cat.items.push({
+      name: { ro: v.dish_ro, ru: v.dish_ru || v.dish_ro, en: v.dish_en || v.dish_ro },
+      desc: { ro: v.desc_ro, ru: v.desc_ru, en: v.desc_en },
+      weight: v.weight,
+      price: v.price,
+      tags: v.tags.split(/\s+/).filter((t) => t in UI.ro),
+    });
+  }
+  return cats;
+}
+
+async function loadSheet() {
+  if (!MENU.sheet) return;
+  const url = `https://docs.google.com/spreadsheets/d/${MENU.sheet}/gviz/tq?tqx=out:csv`;
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error(res.status);
+    const cats = fromSheet(parseCSV(await res.text()));
+    if (cats.length) MENU.categories = cats;
+  } catch (e) {
+    console.warn("sheet not loaded, using built-in menu", e);
+  }
+}
+
 function dish(item, lang) {
-  const weight = item.weight.replace(/(g|ml)$/, (unit) => UI[lang][unit]);
+  const weight = esc(item.weight).replace(/(g|ml)$/, (unit) => UI[lang][unit]);
   const tags = (item.tags || []).map((t) => `<span class="tag tag-${t}">${UI[lang][t]}</span>`).join("");
   return `
     <article class="dish">
       <div class="dish-row">
-        <h3>${item.name[lang]}</h3>
+        <h3>${esc(item.name[lang])}</h3>
         <span class="leader"></span>
-        <span class="price">${item.price} ${MENU.currency[lang]}</span>
+        <span class="price">${esc(item.price)} ${MENU.currency[lang]}</span>
       </div>
-      <p class="desc">${item.desc[lang]}</p>
+      ${item.desc[lang] ? `<p class="desc">${esc(item.desc[lang])}</p>` : ""}
       <p class="meta"><span>${weight}</span>${tags}</p>
     </article>`;
 }
@@ -46,12 +103,12 @@ function render(lang) {
   ).join("");
 
   document.getElementById("tabs").innerHTML = MENU.categories.map((c) =>
-    `<a href="#${c.id}" data-id="${c.id}">${c.title[lang]}</a>`
+    `<a href="#${c.id}" data-id="${c.id}">${esc(c.title[lang] || c.title.ro)}</a>`
   ).join("");
 
   document.getElementById("menu").innerHTML = MENU.categories.map((c) => `
     <section id="${c.id}" class="cat">
-      <h2>${c.title[lang]}</h2>
+      <h2>${esc(c.title[lang] || c.title.ro)}</h2>
       ${c.items.map((item) => dish(item, lang)).join("")}
     </section>`
   ).join("");
@@ -100,4 +157,4 @@ function markTab() {
 
 addEventListener("scroll", markTab, { passive: true });
 
-render(pickLang());
+loadSheet().then(() => render(pickLang()));
